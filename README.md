@@ -1,8 +1,6 @@
-# Тестовое задание на позицию Frontend разработчика для компании [Netris](https://netris.ru/)
+# Тестовое задание на позицию Frontend разработчика для компании [Netris](https://netris.ru/) ([Онлайн-демо](https://netris-bitkov.vercel.app/))
 
-## [Онлайн-демо](https://netris-bitkov.vercel.app/)
-
-![Github Preview](https://github.com/bitkovdev/Netris.Frontend.TestTask/tree/main/docs/github-preview.png)
+![](https://github.com/bitkovdev/Netris.Frontend.TestTask/blob/main/docs/github-preview.png?raw=true)
 
 ## Запуск проекта
 
