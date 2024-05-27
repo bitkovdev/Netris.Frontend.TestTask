@@ -21,7 +21,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": "./",
-    "paths": {}
+    "paths": {
+      "app/*": ["src/app/*"],
+      "pages/*": ["src/pages/*"],
+      "shared/*": ["src/shared/*"],
+      "feature/*": ["src/feature/*"],
+      "widgets/*": ["src/widgets/*"],
+      "entities/*": ["src/entities/*"]
+    }
   },
   "include": [
     "src",
