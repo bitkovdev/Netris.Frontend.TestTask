@@ -1,0 +1,45 @@
+.pageContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.videoPlayer {
+  width: 60%;
+  border-radius: 16px;
+}
+
+.eventsContainer {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+  h2 {
+    margin: 0;
+    font-weight: 600;
+    color: #273a64;
+  }
+}
+
+.eventsButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  button {
+    margin: 0;
+    padding: 4px;
+    font-weight: 500;
+    color: #273a64;
+    background: none;
+    transition: 350ms;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid #273a64;
+    &:hover {
+      color: #FFFFFF;
+      background: #273a64;
+    }
+    &:active {
+      opacity: 0.8;
+    }
+  }
+}
