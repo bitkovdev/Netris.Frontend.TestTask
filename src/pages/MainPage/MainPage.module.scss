@@ -21,9 +21,11 @@
 }
 
 .eventsButtons {
+  height: 62vh;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  overflow: scroll;
   button {
     margin: 0;
     padding: 4px;
