@@ -7,13 +7,8 @@ export const $EventsList = restore(fetchGetEventsList.doneData, []).map(
     element.map(item => ({
       time_code: sharedLibHelper.TimestampToTimeCode(item.timestamp),
       timestamp: item.timestamp,
+      timestamp_end: item.timestamp + item.duration,
       duration: item.duration,
-      zone: {
-        // converting pixels to percentages for layout on canvas
-        left: (item.zone.left / 1280) * 100,
-        top: (item.zone.top / 720) * 100,
-        width: item.zone.width,
-        height: item.zone.height,
-      },
+      zone: item.zone,
     })),
 )

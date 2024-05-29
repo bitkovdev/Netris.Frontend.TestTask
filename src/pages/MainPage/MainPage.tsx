@@ -54,13 +54,29 @@ export const MainPage = () => {
           ;(function loop() {
             if (!$this.paused && !$this.ended) {
               ctx.drawImage($this, 0, 0)
-              setTimeout(loop, 1000 / 24) // drawing at 24fps
+              if (eventsList) {
+                eventsList.map(item => {
+                  if (
+                    $this.currentTime >= item.timestamp &&
+                    $this.currentTime <= item.timestamp_end
+                  ) {
+                    ctx.fillStyle = "green"
+                    ctx.fillRect(
+                      item.zone.left,
+                      item.zone.top,
+                      item.zone.width,
+                      item.zone.height,
+                    )
+                  }
+                })
+              }
+              setInterval(loop, 1000 / 24) // drawing at 24fps
             }
           })()
         })
       }
     }
-  }, [canvasRef, videoRef])
+  }, [canvasRef, videoRef, eventsList])
 
   const setTimestamp = async (timestamp: number) => {
     if (canvasRef.current && videoRef.current) {
@@ -72,7 +88,23 @@ export const MainPage = () => {
         video.currentTime = timestamp
         // If the video is paused, the handler below will change the current freeze-frame
         if (video.paused) {
-          video.ontimeupdate = () => ctx.drawImage(video, 0, 0)
+          video.ontimeupdate = () => {
+            ctx.drawImage(video, 0, 0)
+            eventsList.map(item => {
+              if (
+                timestamp >= item.timestamp &&
+                timestamp <= item.timestamp_end
+              ) {
+                ctx.fillStyle = "green"
+                ctx.fillRect(
+                  item.zone.left,
+                  item.zone.top,
+                  item.zone.width,
+                  item.zone.height,
+                )
+              }
+            })
+          }
         }
       }
     }
