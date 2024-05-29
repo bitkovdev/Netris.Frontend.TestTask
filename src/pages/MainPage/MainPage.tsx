@@ -26,54 +26,76 @@ export const MainPage = () => {
         canvas.height = video.videoHeight
       })
 
-      // Click handler for play video
-      const playVideo = async () => {
-        if (video.paused) {
-          await video.play()
-          canvas.removeEventListener("click", playVideo)
-          canvas.addEventListener("click", pauseVideo)
-        }
-      }
-
-      // Click handler for pause video
-      const pauseVideo = () => {
-        if (!video.paused) {
-          video.pause()
-          canvas.removeEventListener("click", pauseVideo)
-          canvas.addEventListener("click", playVideo)
-        }
-      }
-
-      canvas.addEventListener("click", playVideo)
-
       if (ctx) {
-        video.addEventListener("play", function () {
-          // I couldn’t think of another way to live broadcast from a video tag. So I had to ignore eslint at this point.
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          const $this = this // cache
-          ;(function loop() {
-            if (!$this.paused && !$this.ended) {
-              ctx.drawImage($this, 0, 0)
-              if (eventsList) {
-                eventsList.map(item => {
-                  if (
-                    $this.currentTime >= item.timestamp &&
-                    $this.currentTime <= item.timestamp_end
-                  ) {
-                    ctx.fillStyle = "green"
-                    ctx.fillRect(
-                      item.zone.left,
-                      item.zone.top,
-                      item.zone.width,
-                      item.zone.height,
-                    )
-                  }
-                })
+        const createRectangles = (createdItemsArray: number[]) => {
+          eventsList.map(item => {
+            if (item) {
+              if (!createdItemsArray.includes(item.timestamp)) {
+                if (
+                  video.currentTime >= item.timestamp &&
+                  video.currentTime <= item.timestamp_end
+                ) {
+                  createdItemsArray = [item.timestamp, ...createdItemsArray]
+                  ctx.fillStyle = "green"
+                  ctx.fillRect(
+                    item.zone.left,
+                    item.zone.top,
+                    item.zone.width,
+                    item.zone.height,
+                  )
+                }
               }
-              setInterval(loop, 1000 / 24) // drawing at 24fps
+              if (video.currentTime >= item.timestamp_end) {
+                ctx.clearRect(
+                  item.zone.left,
+                  item.zone.top,
+                  item.zone.width,
+                  item.zone.height,
+                )
+              }
             }
-          })()
-        })
+          })
+        }
+
+        video.addEventListener("timeupdate", () => createRectangles([]))
+
+        // Click handler for play video
+        const playVideo = async () => {
+          if (video.paused) {
+            await video.play()
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            canvas.removeEventListener("click", playVideo)
+            canvas.addEventListener("click", pauseVideo)
+          }
+        }
+
+        // Click handler for pause video
+        const pauseVideo = () => {
+          if (!video.paused) {
+            video.pause()
+            video.removeEventListener("timeupdate", () => createRectangles([]))
+            eventsList.map(item => {
+              if (item) {
+                if (
+                  video.currentTime >= item.timestamp &&
+                  video.currentTime <= item.timestamp_end
+                ) {
+                  ctx.fillStyle = "green"
+                  ctx.fillRect(
+                    item.zone.left,
+                    item.zone.top,
+                    item.zone.width,
+                    item.zone.height,
+                  )
+                }
+              }
+            })
+            canvas.removeEventListener("click", pauseVideo)
+            canvas.addEventListener("click", playVideo)
+          }
+        }
+
+        canvas.addEventListener("click", playVideo)
       }
     }
   }, [canvasRef, videoRef, eventsList])
@@ -85,35 +107,29 @@ export const MainPage = () => {
       const ctx = canvas.getContext("2d")
 
       if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
         video.currentTime = timestamp
-        // If the video is paused, the handler below will change the current freeze-frame
-        if (video.paused) {
-          video.ontimeupdate = () => {
-            ctx.drawImage(video, 0, 0)
-            eventsList.map(item => {
-              if (
-                timestamp >= item.timestamp &&
-                timestamp <= item.timestamp_end
-              ) {
-                ctx.fillStyle = "green"
-                ctx.fillRect(
-                  item.zone.left,
-                  item.zone.top,
-                  item.zone.width,
-                  item.zone.height,
-                )
-              }
-            })
+        eventsList.map(item => {
+          if (timestamp >= item.timestamp && timestamp <= item.timestamp_end) {
+            ctx.fillStyle = "green"
+            ctx.fillRect(
+              item.zone.left,
+              item.zone.top,
+              item.zone.width,
+              item.zone.height,
+            )
           }
-        }
+        })
       }
     }
   }
 
   return (
     <div className={styles.pageContainer}>
-      <canvas ref={canvasRef} className={styles.videoPlayer} />
-      <video ref={videoRef} src={VIDEO_ROOT} muted hidden />
+      <div className={styles.videoContainer}>
+        <canvas ref={canvasRef} />
+        <video ref={videoRef} src={VIDEO_ROOT} muted />
+      </div>
       <div className={styles.eventsContainer}>
         <h2>Список событий:</h2>
         <div className={styles.eventsButtons}>
