@@ -26,20 +26,21 @@ export const MainPage = () => {
         canvas.height = video.videoHeight
       })
 
-      // Click handler for pause video
-      const pauseVideo = () => {
-        if (!video.paused) {
-          video.pause()
-          canvas.removeEventListener("click", pauseVideo)
-        }
-      }
-
       // Click handler for play video
       const playVideo = async () => {
         if (video.paused) {
           await video.play()
           canvas.removeEventListener("click", playVideo)
           canvas.addEventListener("click", pauseVideo)
+        }
+      }
+
+      // Click handler for pause video
+      const pauseVideo = () => {
+        if (!video.paused) {
+          video.pause()
+          canvas.removeEventListener("click", pauseVideo)
+          canvas.addEventListener("click", playVideo)
         }
       }
 
@@ -69,7 +70,7 @@ export const MainPage = () => {
 
       if (ctx) {
         video.currentTime = timestamp
-        // If the video is paused, the handler below will change the current freeze frame
+        // If the video is paused, the handler below will change the current freeze-frame
         if (video.paused) {
           video.ontimeupdate = () => ctx.drawImage(video, 0, 0)
         }
